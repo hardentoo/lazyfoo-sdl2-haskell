@@ -14,10 +14,8 @@ init = do
   createWindow "Image SDL" $
     defaultWindow { windowInitialSize = V2 600 480 }
 
-loadMedia :: Window -> IO ()
-loadMedia w = do
-  windowSurface <- getWindowSurface w
-  imageSurface <- loadBMP "./data/kitty.bmp"
+reloadMedia :: Window -> Surface -> Surface -> IO ()
+reloadMedia w windowSurface imageSurface = do
   surfaceBlit imageSurface Nothing windowSurface Nothing
   updateWindowSurface w
 
@@ -29,6 +27,9 @@ close = do
 main :: IO ()
 main = do
   window <- init
+  windowSurface <- getWindowSurface window
+  imageSurface <- loadBMP "./data/kitty.bmp"
+
   t <- time
   timeRef <- newIORef t
 
@@ -37,7 +38,9 @@ main = do
         let dt = t' - t
         writeIORef timeRef dt
         pollEvent >>= return . (,) dt)
-      actuate = (\_ b -> if b then return True else loadMedia window >> return False)
+      actuate = (\_ b -> if b
+                         then return True
+                         else reloadMedia window windowSurface imageSurface >> return False)
       sf      = arr ((== QuitEvent) . eventPayload)
 
   reactimate waitEvent sense actuate sf
