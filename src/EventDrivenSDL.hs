@@ -3,6 +3,8 @@
 import SDL
 import Linear
 import Prelude hiding (init)
+import FRP.Yampa (reactimate, arr)
+import Data.IORef
 
 
 init :: IO Window
@@ -12,32 +14,10 @@ init = do
   createWindow "Image SDL" $
     defaultWindow { windowInitialSize = V2 600 480 }
 
-loop :: Window -> IO ()
-loop w = do
+loadMedia :: Window -> IO ()
+loadMedia w = do
   windowSurface <- getWindowSurface w
-  imageSurface <- loadBMP "./kitty.bmp"
-
-  surfaceBlit imageSurface Nothing windowSurface Nothing
-  updateWindowSurface w
-
-  while areWeQuit (reload w windowSurface imageSurface)
-
-while :: IO Bool -> IO () -> IO ()
-while iobool io = do
-  b <- iobool
-  case b of
-    True -> return ()
-    _    -> io >> while iobool io
-
-areWeQuit :: IO Bool
-areWeQuit = any isJustQuitEvent <$> pollEvents
-
-isJustQuitEvent :: Event -> Bool
-isJustQuitEvent (Event _ QuitEvent) = True
-isJustQuitEvent _                   = False
-
-reload :: Window -> Surface -> Surface -> IO ()
-reload w windowSurface imageSurface = do
+  imageSurface <- loadBMP "./data/kitty.bmp"
   surfaceBlit imageSurface Nothing windowSurface Nothing
   updateWindowSurface w
 
@@ -48,6 +28,17 @@ close = do
 
 main :: IO ()
 main = do
-  init >>=
-    loop
+  window <- init
+  t <- time
+  timeRef <- newIORef t
+
+  let sense   = (\_ -> do
+        t' <- readIORef timeRef
+        let dt = t' - t
+        writeIORef timeRef dt
+        pollEvent >>= return . (,) dt)
+      actuate = (\_ b -> if b then return True else loadMedia window >> return False)
+      sf      = arr ((== QuitEvent) . eventPayload)
+
+  reactimate waitEvent sense actuate sf
   close
