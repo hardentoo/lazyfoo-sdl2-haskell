@@ -15,7 +15,7 @@ init = do
 loadMedia :: Window -> IO ()
 loadMedia w = do
   windowSurface <- getWindowSurface w
-  imageSurface <- loadBMP "./kitty.bmp"
+  imageSurface <- loadBMP "./data/kitty.bmp"
   surfaceBlit imageSurface Nothing windowSurface Nothing
   updateWindowSurface w
 
