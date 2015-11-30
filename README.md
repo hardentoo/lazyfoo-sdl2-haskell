@@ -5,6 +5,11 @@ A Haskell implementation of [Lazy Foo's SDL tutorials](http://lazyfoo.net/tutori
 
 I will be adding some more information soon.
 
+Lessons done:
+* [Hello SDL](./src/HelloSDL.hs)
+* [Getting an Image on the Screen](./src/ImageSDL.hs)
+* [Event Driven Programming](./src/EventDrivenSDL.hs)
+
 For now, you should run the examples with `runhaskell *SDL.hs`.
 
 TODOs:
