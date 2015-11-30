@@ -4,3 +4,9 @@ A Haskell implementation of [Lazy Foo's SDL tutorials](http://lazyfoo.net/tutori
 ---
 
 I will be adding some more information soon.
+
+For now, you should run the examples with `runhaskell *SDL.hs`.
+
+TODOs:
+* Run all the lessons from a single `main` function
+* Rewrite the third lesson using `FRP.Yampa`
