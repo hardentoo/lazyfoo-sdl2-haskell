@@ -9,6 +9,7 @@ Lessons done:
 * [Hello SDL](./src/HelloSDL.hs)
 * [Getting an Image on the Screen](./src/ImageSDL.hs)
 * [Event Driven Programming](./src/EventDrivenSDL.hs)
+* [Key Presses](./src/KeyPressesSDL.hs)
 
 For now, you should run the examples with `runhaskell *SDL.hs`.
 
