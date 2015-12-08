@@ -21,7 +21,6 @@ reloadMedia w windowSurface imageSurface = do
 
 close :: IO ()
 close = do
-  delay 2000
   quit
 
 main :: IO ()
