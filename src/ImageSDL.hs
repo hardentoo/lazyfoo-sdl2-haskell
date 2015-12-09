@@ -1,9 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import SDL
-import Data.Array
 import Control.Monad.State
-import Control.Arrow
 import Core
 
 

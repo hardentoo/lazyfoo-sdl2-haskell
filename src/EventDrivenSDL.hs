@@ -1,10 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import SDL
-import Data.Array
-import Control.Monad
-import Control.Monad.State as ST
-import Control.Arrow
+import Control.Monad (unless)
+import Control.Monad.State
 import Core
 
 

@@ -1,12 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import SDL
-import Linear
-import Data.Array
-import Control.Monad
-import qualified Control.Monad.State as ST
+import Control.Monad (unless)
+import Control.Monad.State
 import Core
-import Control.Arrow
 
 
 data Action = UpKey | DownKey | Quit | Other deriving (Eq)
@@ -25,15 +22,15 @@ getAction _ = Other
 
 main :: IO ()
 main = do
-  s <- ST.execStateT initState undefined
-  s <- ST.execStateT (loadMedia [ (DefaultS, "./data/kitty.bmp")
-                                , (ImageUpS, "./data/kitty-up.bmp")
-                                , (ImageDnS, "./data/kitty-down.bmp")
-                                ]) s
+  s <- execStateT initState undefined
+  s <- execStateT (loadMedia [ (DefaultS, "./data/kitty.bmp")
+                             , (ImageUpS, "./data/kitty-up.bmp")
+                             , (ImageDnS, "./data/kitty-down.bmp")
+                             ]) s
 
   let loop = do
         event <- fmap eventPayload waitEvent
-        ST.evalStateT (reloadWindowSurface
+        evalStateT (reloadWindowSurface
           (case getAction event of
             UpKey   -> ImageUpS
             DownKey -> ImageDnS
@@ -44,4 +41,4 @@ main = do
 
   loop
 
-  ST.evalStateT close s
+  evalStateT close s
