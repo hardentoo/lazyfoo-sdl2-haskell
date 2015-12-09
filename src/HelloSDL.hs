@@ -8,7 +8,7 @@ main :: IO ()
 main = do
   initialize [InitVideo]
 
-  window <- createWindow "A First SDL Try" $
+  window <- createWindow "Hello SDL"
     defaultWindow { windowInitialSize = V2 600 480 }
 
   surface <- getWindowSurface window
@@ -17,4 +17,7 @@ main = do
   updateWindowSurface window
 
   delay 2000
+
+  freeSurface surface
+  destroyWindow window
   quit
