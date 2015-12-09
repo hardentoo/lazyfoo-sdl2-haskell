@@ -1,46 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import SDL
-import Linear
-import Prelude hiding (init)
-import FRP.Yampa (reactimate, arr)
-import Data.IORef
+import Data.Array
+import Control.Monad
+import Control.Monad.State as ST
+import Control.Arrow
+import Core
 
-
-init :: IO Window
-init = do
-  initialize [InitVideo]
-
-  createWindow "Image SDL" $
-    defaultWindow { windowInitialSize = V2 600 480 }
-
-reloadMedia :: Window -> Surface -> Surface -> IO ()
-reloadMedia w windowSurface imageSurface = do
-  surfaceBlit imageSurface Nothing windowSurface Nothing
-  updateWindowSurface w
-
-close :: IO ()
-close = do
-  quit
 
 main :: IO ()
 main = do
-  window <- init
-  windowSurface <- getWindowSurface window
-  imageSurface <- loadBMP "./data/kitty.bmp"
+  s <- execStateT initState undefined
+  s <- execStateT (loadMedia [(DefaultS, "./data/kitty.bmp")]) s
 
-  t <- time
-  timeRef <- newIORef t
+  let loop = do
+        event <- fmap eventPayload waitEvent
+        evalStateT (reloadWindowSurface DefaultS) s
+        unless (event == QuitEvent) loop
 
-  let sense   = (\_ -> do
-        t' <- readIORef timeRef
-        let dt = t' - t
-        writeIORef timeRef dt
-        pollEvent >>= return . (,) dt)
-      actuate = (\_ b -> if b
-                         then return True
-                         else reloadMedia window windowSurface imageSurface >> return False)
-      sf      = arr ((== QuitEvent) . eventPayload)
+  loop
 
-  reactimate waitEvent sense actuate sf
-  close
+  evalStateT close s
