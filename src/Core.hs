@@ -43,6 +43,16 @@ loadMedia surfaces = do
   loadedSurfaces <- mapM (\(a, b) -> (,) a <$> SDL.loadBMP b) surfaces
   ST.modify $ second (A.// loadedSurfaces)
 
+convertSurfaces :: SurfaceName -> VideoState ()
+convertSurfaces surface = do
+  surfaces <- ST.gets snd
+  format <- SDL.surfaceFormat (surfaces A.! WindowS)
+
+  surface' <- SDL.convertSurface (surfaces A.! surface) format
+  SDL.freeSurface (surfaces A.! surface)
+
+  ST.modify $ second (A.// [(surface, surface')])
+
 reloadWindowSurface :: SurfaceName -> VideoState ()
 reloadWindowSurface surface = do
   (window, surfaces) <- ST.get
